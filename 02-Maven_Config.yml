@@ -30,12 +30,12 @@
     - name: Copy Maven environment configuration file
       template:
         src: Ubuntu_Env_Vars.j2
-        dest: /etc/profile.d/maven.sh
+        dest: source /etc/profile.d/maven.sh
       when: ansible_os_family == 'Debian'
 
     - name: Set executable permission for maven.sh
       file:
-        path: /etc/profile.d/maven.sh  # Specify the path to the file or directory
+        path: source /etc/profile.d/maven.sh  # Specify the path to the file or directory
         mode: "755" 
 
     - name: Load Maven environment variables
