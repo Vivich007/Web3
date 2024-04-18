@@ -1,0 +1,23 @@
+---
+- name: Build WAR file
+  hosts: TomcatServers
+  gather_facts: false
+  tasks:
+    - name: Copy WAR file
+      git:
+        repo: https://github.com/Vivich007/GroupWebCalc.git
+        dest: /home/centos/Web3/
+        version: main  # or specify a branch or tag
+      
+    - name: Run Maven build
+      shell: |
+        cd /home/centos/Web3/
+        mvn clean package
+      when: ansible_os_family == 'Redhat'
+    
+    - name: Run Maven build
+      shell: |
+        cd /home/ubuntu/Web3
+        mvn clean package
+      when: ansible_os_family == 'Debian'
+...

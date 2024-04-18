@@ -1,0 +1,69 @@
+pipeline {
+	agent any
+	stages {
+		stage("Git Checkout"){
+			steps{
+			    git credentialsId: 'github', url: 'https://github.com/Vivich007/Web3.git'
+			}
+		}
+		stage("Configure Web Servers"){
+			steps{
+			    echo "Configure Web Servers"
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: '02-JavaTomcat.yml'
+				
+			}
+		}
+		
+		stage("Maven Build"){
+			steps{
+			    echo "Build Maven Project"
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '03-Maven_Build.yml', vaultTmpPath: ''
+				
+			}
+		}
+		
+		stage("Maven Test"){
+			steps{
+			    echo "Test Maven Project"
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '04-Maven_Test.yml', vaultTmpPath: ''
+				
+			}
+		}
+		
+		stage("Deploy"){
+			steps{
+			    echo "Deploy Web App"
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '05-Deploy.yml', vaultTmpPath: ''
+				
+			}
+		}
+	}
+}
+
+
+##################################
+Build
+#############################
+---
+- name: Build WAR file
+  hosts: TomcatServers
+  gather_facts: false
+  tasks:
+    - name: Clone Repo
+      git:
+        repo: https://github.com/Vivich007/GroupWebCalc.git
+        dest: /home/centos/Web3/
+        version: main  # or specify a branch or tag
+      
+    - name: Run Maven build
+      shell: |
+        cd /home/centos/Web3/
+        mvn clean package
+      when: ansible_os_family == 'Redhat'
+    
+    - name: Run Maven build
+      shell: |
+        cd /home/ubuntu/Web3
+        mvn clean package
+      when: ansible_os_family == 'Debian'
+...

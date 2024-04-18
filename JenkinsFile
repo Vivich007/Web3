@@ -9,31 +9,21 @@ pipeline {
 		stage("Configure Web Servers"){
 			steps{
 			    echo "Configure Web Servers"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '02-JavaTomcat.yml'
-				
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'TomcatConfig.yml'
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'MavenConfig.yml'
 			}
 		}
-		
 		stage("Maven Build"){
 			steps{
 			    echo "Build Maven Project"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '03-Maven_Build.yml', vaultTmpPath: ''
-				
+				sh '/opt/apache-maven-3.9.6/bin/mvn clean package'
 			}
 		}
 		
 		stage("Maven Test"){
 			steps{
 			    echo "Test Maven Project"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '04-Maven_Test.yml', vaultTmpPath: ''
-				
-			}
-		}
-		
-		stage("Deploy"){
-			steps{
-			    echo "Deploy Web App"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Web_Calc_Servers.ini', playbook: '05-Deploy.yml', vaultTmpPath: ''
+				junit stdioRetention: '', testResults: ' target/surefire-reports/*.xml'
 				
 			}
 		}

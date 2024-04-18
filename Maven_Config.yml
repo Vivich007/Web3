@@ -1,0 +1,49 @@
+---
+- name: Install Maven
+  hosts: TomcatServers
+  become: yes
+  
+  tasks:
+    
+    - name: Download Apache Maven
+      get_url:
+        url: "https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz"
+        dest: /opt/
+
+    - name: Extract Maven Archive
+      unarchive:
+        src: /opt/apache-maven-3.9.6-bin.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Copy Maven environment configuration file
+      template:
+        src: Centos_Env_Variables.j2
+        dest: /etc/profile.d/maven.sh
+      when: ansible_os_family == 'RedHat'
+      #notify: Reload profile
+    
+  #handlers:
+    #- name: Reload profile
+      #ansible.builtin.command: source /etc/profile 
+    
+    - name: Copy Maven environment configuration file
+      template:
+        src: Ubuntu_Env_Vars.j2
+        dest: /etc/profile.d/maven.sh
+      when: ansible_os_family == 'Debian'
+
+    - name: Set executable permission for maven.sh
+      file:
+        path: /etc/profile.d/maven.sh  # Specify the path to the file or directory
+        mode: "755" 
+
+    - name: Load Maven environment variables
+      shell: source /etc/profile.d/maven.sh
+      when: ansible_os_family == 'RedHat'
+
+    - name: Load Maven environment variables
+      script: /etc/profile.d/maven.sh
+      when: ansible_distribution == 'Ubuntu'
+
+... 
