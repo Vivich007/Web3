@@ -17,6 +17,7 @@
     apt:
       update_cache: yes
     when: ansible_os_family == 'Debian'
+
   - name: Install Java
     yum:
       name: java-11-openjdk-devel
@@ -25,7 +26,7 @@
 
   - name: Install Java
     apt:
-      name: openjdk-11-jre-headless
+      name: openjdk-11-jdk
       state: present
     when: ansible_os_family == 'Debian'
 
