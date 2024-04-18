@@ -44,6 +44,6 @@
 
     - name: Load Maven environment variables
       script: /etc/profile.d/maven.sh
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == 'Debian'
 
 ... 
