@@ -5,10 +5,18 @@
   tasks:
     - name: Copy WAR file
       git:
-        repo: https://github.com/Vivich007/GroupWebCalc.git
+        repo: https://github.com/Vivich007/Web3.git
         dest: /home/centos/Web3/
-        version: main  # or specify a branch or tag
-      
+        version: master  # or specify a branch or tag
+      when: ansible_os_family == 'Redhat'
+
+    - name: Copy WAR file
+      git:
+        repo: https://github.com/Vivich007/Web3.git
+        dest: /home/centos/Web3/
+        version: master 
+      when: ansible_os_family == 'Debian'
+
     - name: Run Maven build
       shell: |
         cd /home/centos/Web3/
