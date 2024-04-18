@@ -1,27 +1,28 @@
 pipeline {
-	agent any
-	stages {
-		
-		stage("Configure Web Servers"){
-			steps{
-			    echo "Configure Web Servers"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'TomcatConfig.yml'
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'MavenConfig.yml'
+	agent 
+		{ansible}
+		stages {
+			
+			stage("Configure Web Servers"){
+				steps{
+					echo "Configure Web Servers"
+					ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'TomcatConfig.yml'
+					ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: 'MavenConfig.yml'
+				}
 			}
-		}
-		stage("Maven Build"){
-			steps{
-			    echo "Build Maven Project"
-				sh '/opt/apache-maven-3.9.6/bin/mvn clean package'
+			stage("Maven Build"){
+				steps{
+					echo "Build Maven Project"
+					sh '/opt/apache-maven-3.9.6/bin/mvn clean package'
+				}
 			}
-		}
-		
-		stage("Maven Test"){
-			steps{
-			    echo "Test Maven Project"
-				junit stdioRetention: '', testResults: ' target/surefire-reports/*.xml'
-				
+			
+			stage("Maven Test"){
+				steps{
+					echo "Test Maven Project"
+					junit stdioRetention: '', testResults: ' target/surefire-reports/*.xml'
+					
+				}
 			}
 		}
 	}
-}
