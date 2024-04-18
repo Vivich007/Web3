@@ -5,8 +5,8 @@ pipeline {
 		stage("Configure Web Servers"){
 			steps{
 			    echo "Configure Web Servers"
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: '01-TomcatConfig.yml'
-				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'TomcatServers.ini', playbook: '02-MavenConfig.yml'
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Tomcat_Servers.ini', playbook: '01-TomcatConfig.yml', vaultTmpPath: ''
+				ansiblePlaybook credentialsId: 'Ansible-Project', disableHostKeyChecking: true, installation: 'Ansible', inventory: 'Tomcat_Servers.ini', playbook: '02-MavenConfig.yml'
 			}
 		}
 		stage("Maven Build"){
